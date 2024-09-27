@@ -1,1 +1,34 @@
 # Your Solution
+
+services:
+  book_catalog:
+    build:
+      context: ./book_catalog/
+      dockerfile: Dockerfile
+    ports:
+      - "5051:5051"
+    environment:
+      - DATABASE_URL=postgresql://bookcatalog_8jg7_user:kgw1X95XC0P96fdmzwAOWU112YNP9w6l@dpg-crjageu8ii6s73fe2na0-a.oregon-postgres.render.com/bookcatalog_8jg7
+    depends_on:
+      - db
+
+  inventory_management:
+    build:
+      context: ./inventory_management/
+      dockerfile: Dockerfile
+    ports:
+      - "5052:5052"
+    environment:
+      - DATABASE_URL=postgresql://bookcatalog_8jg7_user:kgw1X95XC0P96fdmzwAOWU112YNP9w6l@dpg-crjageu8ii6s73fe2na0-a.oregon-postgres.render.com/bookcatalog_8jg7
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: bookcatalog_8jg7_user
+      POSTGRES_PASSWORD: kgw1X95XC0P96fdmzwAOWU112YNP9w6l
+      POSTGRES_DB: 223417356task7
+    ports:
+      - "5432:5432"
+      
