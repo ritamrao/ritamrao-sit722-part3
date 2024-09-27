@@ -1,57 +1,9 @@
-# Your Solution
-
-# Deployment and Service for PostgreSQL Database
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres-deployment
-  labels:
-    app: postgres
+  name: book-catalog
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: postgres
-  template:
-    metadata:
-      labels:
-        app: postgres
-    spec:
-      containers:
-      - name: postgres
-        image: postgres:13
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_USER
-          value: "bookcatalog_8jg7_user"
-        - name: POSTGRES_PASSWORD
-          value: "kgw1X95XC0P96fdmzwAOWU112YNP9w6l"
-        - name: POSTGRES_DB
-          value: "223417356task7"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgres-service
-spec:
-  selector:
-    app: postgres
-  ports:
-    - protocol: TCP
-      port: 5432
-      targetPort: 5432
-  type: ClusterIP
-
----
-
-# Deployment and Service for Book Catalog Application
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: book-catalog-deployment
-spec:
-  replicas: 2
   selector:
     matchLabels:
       app: book-catalog
@@ -62,32 +14,32 @@ spec:
     spec:
       containers:
       - name: book-catalog
-        image: 6p223417356acr.azurecr.io/book_catalog:latest
-        ports:
-        - containerPort: 8080
+        image: week7ps223417356acr.azurecr.io/book_catalog:latest
+        env:
+        - name: PORT
+          value: "8000"
+        - name: DATABASE_URL
+          value: "postgresql://bookcatalog_8jg7_user:kgw1X95XC0P96fdmzwAOWU112YNP9w6l@dpg-crjageu8ii6s73fe2na0-a.oregon-postgres.render.com/bookcatalog_8jg7"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: book-catalog-service
+  name: book-catalog
 spec:
   selector:
     app: book-catalog
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8080
   type: LoadBalancer
-  
-
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
 ---
-# Deployment and Service for Inventory Management Application
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: inventory-management-deployment
+  name: inventory-management
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: inventory-management
@@ -98,19 +50,25 @@ spec:
     spec:
       containers:
       - name: inventory-management
-        image: 6p223417356acr.azurecr.io/inventory_management:latest
+        image: week7ps223417356acr.azurecr.io/inventory_management:latest
+        imagePullPolicy: Always
         ports:
-        - containerPort: 8081
+        - containerPort: 8001
+        env:
+        - name: PORT
+          value: "8001"
+        - name: DATABASE_URL
+          value: "postgresql://bookcatalog_8jg7_user:kgw1X95XC0P96fdmzwAOWU112YNP9w6l@dpg-crjageu8ii6s73fe2na0-a.oregon-postgres.render.com/bookcatalog_8jg7"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: inventory-management-service
+  name: inventory-management
 spec:
   selector:
     app: inventory-management
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8081
   type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8001

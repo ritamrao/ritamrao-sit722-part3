@@ -1,34 +1,28 @@
-# Your Solution
-
+version: '3'
 services:
-  book_catalog:
-    build:
-      context: ./book_catalog/
-      dockerfile: Dockerfile
-    ports:
-      - "5051:5051"
-    environment:
-      - DATABASE_URL=postgresql://bookcatalog_8jg7_user:kgw1X95XC0P96fdmzwAOWU112YNP9w6l@dpg-crjageu8ii6s73fe2na0-a.oregon-postgres.render.com/bookcatalog_8jg7
-    depends_on:
-      - db
 
-  inventory_management:
-    build:
-      context: ./inventory_management/
+  book-catalog:
+    image: week7ps223417356acr.azurecr.io/book_catalog:latest
+    build: 
+      context: ./book_catalog
       dockerfile: Dockerfile
+    container_name: book-catalog
     ports:
-      - "5052:5052"
+      - "8000:8000"
     environment:
+      - PORT=8000
       - DATABASE_URL=postgresql://bookcatalog_8jg7_user:kgw1X95XC0P96fdmzwAOWU112YNP9w6l@dpg-crjageu8ii6s73fe2na0-a.oregon-postgres.render.com/bookcatalog_8jg7
-    depends_on:
-      - db
+    restart: "no"
 
-  db:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: bookcatalog_8jg7_user
-      POSTGRES_PASSWORD: kgw1X95XC0P96fdmzwAOWU112YNP9w6l
-      POSTGRES_DB: 223417356task7
+  inventory-management:
+    image: week7ps223417356acr.azurecr.io/inventory_management:latest
+    build: 
+      context: ./inventory_management
+      dockerfile: Dockerfile
+    container_name: inventory-management
     ports:
-      - "5432:5432"
-      
+     - "8001:8001"
+    environment:
+      - PORT=8001
+      - DATABASE_URL=postgresql://bookcatalog_8jg7_user:kgw1X95XC0P96fdmzwAOWU112YNP9w6l@dpg-crjageu8ii6s73fe2na0-a.oregon-postgres.render.com/bookcatalog_8jg7
+    restart: "no"
